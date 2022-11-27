@@ -76,7 +76,7 @@ cd ../../../
 """
     subprocess.run(get_dihed_cmd, shell=True)
 
-    get_init_cmd = f"""
+    get_dists_cmd = f"""
 cd ./{i}/amber/pr
 /home/apps/amber22/bin/cpptraj -i ./4dist.in -p ../../top/leap.parm7
 cp ./4dist.txt {dists_dir}/{i}.txt

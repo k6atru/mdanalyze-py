@@ -82,4 +82,4 @@ cd ./{i}/amber/pr
 cp ./4dist.txt {dists_dir}/{i}.txt
 cd ../../../
 """
-    subprocess.run(get_init_cmd, shell=True)
+    subprocess.run(get_dists_cmd, shell=True)

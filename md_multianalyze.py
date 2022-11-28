@@ -109,7 +109,7 @@ def make_in_files(id_list: list,
                          id=id)
 
 
-# config.iniの読み込み
+# config.iniの読み込みと結果を格納するディレクトリの作成
 config = configparser.ConfigParser(strict=False, allow_no_value=True)
 config.read("config.ini")
 id = [k.upper() for k, v in config.items("ID")]

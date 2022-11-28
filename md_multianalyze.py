@@ -71,7 +71,6 @@ trajin ./002/mdcrd 1 last 50
         dists_script.write(f"""distance {name} :{resi}@{atoms[0]} :{resi}@{atoms[1]} out dists.txt
 """)
         dists_script.close()
-    dists_script.close()
 
 
 def make_in_files(id_list: list,

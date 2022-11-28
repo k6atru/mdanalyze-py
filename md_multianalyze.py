@@ -7,15 +7,6 @@ import Bio.PDB as pdb
 
 
 def make_dirs_for_results(id_list: list) -> list:
-    """測定結果を格納するディレクトリを作成する
-
-    Args:
-        id_list (list): config.iniなどから読み込んだIDのリスト
-
-    Returns:
-        list: 指定したIDの解析結果を格納する用のディレクトリリスト
-    """
-
     pwd = os.path.abspath(os.path.dirname(__file__))
     pdb_dir = os.path.join(pwd, "init_pdb")
     dihed_dir = os.path.join(pwd, "dihed")
@@ -27,16 +18,8 @@ def make_dirs_for_results(id_list: list) -> list:
 
 
 def dihed_to_in_file(dihed_dict: dict,
-                     resi: str,
+                     res_name: str,
                      id: str):
-    """二面角測定用のinputファイルを作成する
-
-    Args:
-        dists_dict (dict): 測定したい距離の辞書 (key: 結果名, value: 距離を構成する2原子のリスト)
-        resi (str): 二面角を測定したい残基
-        id (str): 対象となるタンパク質のID
-    """
-
     dihed_script = open(f"{id}/amber/pr/dihed.in", "w")
     dihed_script.write(f"""trajin ./001/mdcrd 1 last 50
 trajin ./002/mdcrd 1 last 50
@@ -44,23 +27,15 @@ trajin ./002/mdcrd 1 last 50
     dihed_script.close()
     for name, atoms in dihed_dict.items():
         dihed_script = open(f"{id}/amber/pr/dihed.in", "a")
-        dihed_script.write(f"""dihedral {name} :{resi}@{atoms[0]} :{resi}@{atoms[1]} :{resi}@{atoms[2]} :{resi}@{atoms[3]} out dihed.txt range360
+        dihed_script.write(f"""dihedral {name} :{res_name}@{atoms[0]} :{res_name}@{atoms[1]} :{res_name}@{atoms[2]} :{res_name}@{atoms[3]} out dihed.txt range360
 strip :SOD,CLA,WAT,TIP3,Na,Cl-
 """)
         dihed_script.close()
 
 
 def dists_to_in_file(dists_dict: dict,
-                     resi: str,
+                     res_name: str,
                      id: str):
-    """距離測定用のinputファイルを作成する
-
-    Args:
-        dists_dict (dict): 測定したい距離の辞書 (key: 結果名, value: 距離を構成する2原子のリスト)
-        resi (str): 距離を測定したい残基
-        id (str): 対象となるタンパク質のID
-    """
-
     dists_script = open(f"{id}/amber/pr/4dist.in", "w")
     dists_script.write(f"""trajin ./001/mdcrd 1 last 50
 trajin ./002/mdcrd 1 last 50
@@ -68,7 +43,7 @@ trajin ./002/mdcrd 1 last 50
     dists_script.close()
     for name, atoms in dists_dict.items():
         dists_script = open(f"{id}/amber/pr/4dist.in", "a")
-        dists_script.write(f"""distance {name} :{resi}@{atoms[0]} :{resi}@{atoms[1]} out 4dist.txt
+        dists_script.write(f"""distance {name} :{res_name}@{atoms[0]} :{res_name}@{atoms[1]} out 4dist.txt
 """)
         dists_script.close()
     dists_script.close()
@@ -78,15 +53,6 @@ def make_in_files(id_list: list,
                   dihed_dict: dict,
                   dists_dict: dict,
                   res_name: str) -> None:
-    """初期構造pdbファイルから対象残基の番号を取得し、二面角と距離測定用のinputファイルを作成する
-
-    Args:
-        id_list (list): config.iniなどから読み込んだIDのリスト
-        dists_dict (dict): 測定したい距離の辞書 (key: 結果名, value: 距離を構成する2原子のリスト)
-        dists_dict (dict): 測定したい距離の辞書 (key: 結果名, value: 距離を構成する2原子のリスト)
-        res_name (str): 測定したい残基名
-    """
-
     for id in id_list:
         pdbfile = os.path.join("./", id, "amber", "pr", "init.pdb")
         pdb_parser = pdb.PDBParser()
@@ -97,19 +63,18 @@ def make_in_files(id_list: list,
         chain = struct[0].get_list()[0]
         res = chain.get_list()
         for r in res:
-            if r.get_resname() == res_name:
-                resi = str(r.get_id()[1])
+            if r.get_resname() == "FPP":
+                res_name = str(r.get_id()[1])
 
         dihed_to_in_file(dihed_dict=dihed_dict,
-                         resi=resi,
+                         res_name=res_name,
                          id=id)
 
         dists_to_in_file(dists_dict=dists_dict,
-                         resi=resi,
+                         res_name=res_name,
                          id=id)
 
 
-# config.iniの読み込み
 config = configparser.ConfigParser(strict=False, allow_no_value=True)
 config.read("config.ini")
 id = [k.upper() for k, v in config.items("ID")]
@@ -117,12 +82,12 @@ pdb_dir, dihed_dir, dists_dir = make_dirs_for_results(id_list=id)
 
 # pdbの初期構造とトラジェクトリを取得
 for i in id:
-    get_init_cmd = f"""
+    get_init_cmd = f("""
 cd ./{i}/amber/pr
 /home/apps/amber22/bin/cpptraj -i ./trajfix.in -p ../../top/leap.parm7
 cp ./init.pdb {pdb_dir}/{i}.pdb
 cp ./traj.trr {pdb_dir}/{i}.trr
-cd ../../../"""
+cd ../../../""")
     subprocess.run(get_init_cmd, shell=True)
 
 # 解析用のスクリプトを作成
@@ -152,3 +117,5 @@ cd ./{i}/amber/pr
 cp ./4dist.txt {dists_dir}/{i}.txt
 cd ../../../"""
     subprocess.run(get_dists_cmd, shell=True)
+
+#%%

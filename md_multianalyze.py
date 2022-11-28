@@ -61,14 +61,14 @@ def dists_to_in_file(dists_dict: dict,
         id (str): 対象となるタンパク質のID
     """
 
-    dists_script = open(f"{id}/amber/pr/4dist.in", "w")
+    dists_script = open(f"{id}/amber/pr/dists.in", "w")
     dists_script.write(f"""trajin ./001/mdcrd 1 last 50
 trajin ./002/mdcrd 1 last 50
 """)
     dists_script.close()
     for name, atoms in dists_dict.items():
-        dists_script = open(f"{id}/amber/pr/4dist.in", "a")
-        dists_script.write(f"""distance {name} :{resi}@{atoms[0]} :{resi}@{atoms[1]} out 4dist.txt
+        dists_script = open(f"{id}/amber/pr/dists.in", "a")
+        dists_script.write(f"""distance {name} :{resi}@{atoms[0]} :{resi}@{atoms[1]} out dists.txt
 """)
         dists_script.close()
     dists_script.close()
@@ -148,7 +148,7 @@ cd ../../../"""
 
     get_dists_cmd = f"""
 cd ./{i}/amber/pr
-/home/apps/amber22/bin/cpptraj -i ./4dist.in -p ../../top/leap.parm7
-cp ./4dist.txt {dists_dir}/{i}.txt
+/home/apps/amber22/bin/cpptraj -i ./dists.in -p ../../top/leap.parm7
+cp ./dists.txt {dists_dir}/{i}.txt
 cd ../../../"""
     subprocess.run(get_dists_cmd, shell=True)

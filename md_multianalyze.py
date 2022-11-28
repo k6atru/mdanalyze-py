@@ -125,13 +125,13 @@ cp ./traj.trr {pdb_dir}/{i}.trr
 cd ../../../"""
     subprocess.run(get_init_cmd, shell=True)
 
-# 解析用のスクリプトを作成
-dihed_dict = {"dih1": ["O1", "C1", "C2", "C3"],
-              "dih2": ["C1", "C2", "C3", "C4"]}
-dists_dict = {"dista": ["C1", "C7"],
-              "distb": ["C1", "C8"],
-              "distan": ["C1", "C12"],
-              "distdsa": ["C1", "C13"]}
+# 解析対象を定義
+dihed_dict = {"O1~C3": ["O1", "C1", "C2", "C3"],
+              "C1~C4": ["C1", "C2", "C3", "C4"]}
+dists_dict = {"C1-C7": ["C1", "C7"],
+              "C1-C8": ["C1", "C8"],
+              "C1-C12": ["C1", "C12"],
+              "C1-C13": ["C1", "C13"]}
 make_in_files(id_list=id,
               res_name="FPP",
               dihed_dict=dihed_dict,

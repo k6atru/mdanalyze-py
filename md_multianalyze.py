@@ -29,7 +29,7 @@ def make_dirs_for_results(id_list: list) -> list:
 def dihed_to_in_file(dihed_dict: dict,
                      resi: str,
                      id: str):
-    """二面角測定用のinputファイルを作成する
+    """辞書を読み取り、二面角測定用のinputファイルを作成する
 
     Args:
         dists_dict (dict): 測定したい距離の辞書 (key: 結果名, value: 距離を構成する2原子のリスト)
@@ -53,7 +53,7 @@ strip :SOD,CLA,WAT,TIP3,Na,Cl-
 def dists_to_in_file(dists_dict: dict,
                      resi: str,
                      id: str):
-    """距離測定用のinputファイルを作成する
+    """辞書を読み取り、距離測定用のinputファイルを作成する
 
     Args:
         dists_dict (dict): 測定したい距離の辞書 (key: 結果名, value: 距離を構成する2原子のリスト)
